@@ -107,7 +107,7 @@ export default {
   },
   mounted () {
     axios
-      .get('https://jsonplaceholder.typicode.com/users')
+      .get('https://jsonplaceholder.typicode.com/users?_limit=5')
       .then(response => {
         this.todos= response.data
       })
@@ -126,9 +126,17 @@ export default {
       ){
         alert ('Vui lòng nhập đầy đủ dữ liệu!')
         }else {
-        this.todos.push(this.newTodos)
-        this.newTodos = {name:'',username:'',email:''}
-        this.modalAdd = false
+          axios.post('https://jsonplaceholder.typicode.com/users',this.newTodos)
+          .then(response => {
+          this.todos.push(response.data)
+          console.log(response.data)
+          })
+          .catch(error => {
+          console.log(error)
+          this.errored = true
+          })
+          this.newTodos = {name:'',username:'',email:''}
+          this.modalAdd = false
       }
     },
     showEditModal (todo,index) {
@@ -145,7 +153,16 @@ export default {
     },
     delTodos (index) {
       if(confirm('Bạn chắc chắn xoá không?')) {
-        this.todos.splice(index,1)
+      axios
+      .delete(`https://jsonplaceholder.typicode.com/users/${index}`)
+      .then(response => {
+        this.todos = response.data
+        this.response.data.splice(index,1)
+      })
+      .catch(error => {
+      console.log(error)
+      this.errored = true
+      })
       }
     }
   }
